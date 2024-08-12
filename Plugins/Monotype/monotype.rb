@@ -22,16 +22,16 @@ module MonotypeChallenge
   }
 
   def self.enabled?
-    self.get_type ? true : false
+    type ? true : false
   end
 
   # Devuelve el tipo para el modo monotype
-  def self.get_type
+  def self.type
     $PokemonGlobal.monotype_type || nil
   end
 
   # Guarda el tipo del monotype
-  def self.set_type(type_index)
+  def self.type=(type_index)
     return if type_index >= self::TYPES.length
 
     selected_type = self::TYPES[type_index]
@@ -39,7 +39,7 @@ module MonotypeChallenge
   end
 
   # Devuelve los tipos posibles para el monotype
-  def self.get_type_options
+  def self.type_options
     options = self::TYPES.map { |type| GameData::Type.get(type).name }
     options.push('NO')
     options
@@ -83,7 +83,6 @@ module MonotypeChallenge
   # Valida que el pokemon sea valido para el reto monotype elegido
   # Devuelve mensaje de error si no lo es
   def self.valid_monotype_with_text?(poke)
-    echoln poke
     if poke.is_a?(Symbol)
       species_data = GameData::Species.get(poke)
       return true if species_data.types.include?($PokemonGlobal.monotype_type)
@@ -93,7 +92,7 @@ module MonotypeChallenge
     selected_type = get_type
     return true if selected_type.nil? # No está activo el monotype
 
-    unless poke.hasType?(selected_type) || get_evolved_types(poke).include?(selected_type)
+    unless poke.hasType?(selected_type) || evolved_types(poke).include?(selected_type)
       return false, GameData::Type.get(selected_type).name
     end
 
@@ -109,7 +108,7 @@ module MonotypeChallenge
 
   # Valida si alguna de las evoluciones del pokemon tiene el tipo
   # del monotype elegido
-  def self.get_evolved_types(poke)
+  def self.evolved_types(poke)
     return [] unless poke && (poke.is_a?(Pokemon) || poke.is_a?(Symbol))
 
     species = poke.is_a?(Pokemon) ? poke.species : poke

@@ -23,7 +23,7 @@ En el script hay una constante llamada `TYPES` en esta constante se definen los 
       ```ruby
        options = MonotypeChallenge.get_type_options
        ret = pbMessage("Elige el tipo para tu reto", options)
-       MonotypeChallenge.set_type(ret)
+       MonotypeChallenge.type = ret
       ```
    5. Luego de esto ponen una conditional branch de tipo script con la siguiente linea `MonotypeChallenge.enabled?`
    6. En el true de ese conditional branch ponen otra conditional branch que es la que se encargará de eliminar a los pokemon no validos del equipo. La conditional branch debe tener la siguiente linea: `MonotypeChallenge.no_valid_pokemon_in_party?`
