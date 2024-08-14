@@ -1,4 +1,4 @@
 Name       = Monotype Challenge
-Version    = 1.0.2
+Version    = 1.0.3
 Essentials = 21.1
 Credits    = DPertierra

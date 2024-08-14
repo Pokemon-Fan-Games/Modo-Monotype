@@ -35,7 +35,7 @@ En el script hay una constante llamada `TYPES` en esta constante se definen los 
    3. Pidan una confirmacion ya que al activarlo se le borrarán todos los Pokemón del equipo que no cumplan con el tipo.
    4. Una vez confirmado hay que agregar al evento una sentencia de script con el siguiente código:
       ```ruby
-       options = MonotypeChallenge.get_type_options
+       options = MonotypeChallenge.type_options
        ret = pbMessage("Elige el tipo para tu reto", options)
        MonotypeChallenge.type = ret
       ```
