@@ -71,12 +71,12 @@ module MonotypeChallenge
 
     commands = starters.map { |starter| GameData::Species.get(starter).name }
 
-    chosen = Kernel.pbMessage('Elige a tu nuevo inicial', commands, -1)
+    chosen = -1
     chosen = Kernel.pbMessage('Elige a tu nuevo inicial', commands, -1) while chosen == -1
 
     pbAddPokemon(starters[chosen], 5)
     $player.remove_pokemon_at_index(0)
-    type_name = GameData::Type.get(get_type).name
+    type_name = GameData::Type.get(type).name
     Kernel.pbMessage("¡A partir de ahora estás en un <b>Reto Monotype</b> de tipo #{type_name}!")
   end
 
@@ -89,7 +89,7 @@ module MonotypeChallenge
 
       return false, GameData::Type.get($PokemonGlobal.monotype_type).name
     end
-    selected_type = get_type
+    selected_type = type
     return true if selected_type.nil? # No está activo el monotype
 
     unless poke.hasType?(selected_type) || evolved_types(poke).include?(selected_type)
@@ -162,10 +162,10 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
     end
 
     alias check_evolution_after_battle_mono check_evolution_after_battle
-    def check_evolution_after_battle
+    def check_evolution_after_battle(party_index)
       return check_evolution_after_battle_mono unless MonotypeChallenge.enabled?
 
-      new_species = check_evolution_after_battle_mono
+      new_species = check_evolution_after_battle_mono(party_index)
 
       new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species)
       new_species
@@ -191,7 +191,7 @@ module Battle::CatchAndStoreMixin
 
     if MonotypeChallenge.enabled? && !MonotypeChallenge.valid_monotype?(battler.pokemon)
       @scene.pbThrowAndDeflect(ball, 1)
-      pbDisplay(_INTL("¡Solo puedes capturar pokémon de tipo {1}!", GameData::Type.get(MonotypeChallenge.get_type).name))
+      pbDisplay(_INTL("¡Solo puedes capturar pokémon de tipo {1}!", GameData::Type.get(MonotypeChallenge.type).name))
     else
       pbThrowPokeBall_mono(idxBattler, ball, catch_rate, showPlayer)
     end

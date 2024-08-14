@@ -4,6 +4,20 @@
 
 Este plugin les permitirá hacer un desafío mono tipo en sus fangames. El jugador podrá elegir el tipo y solo se le permitirá capturar a los Pokémon de ese tipo o que tengan una evolucion de ese tipo. Al activarlo le eliminará del equipo todos sus Pokémon que no cumplan con el tipo, si no tiene ningun Pokémon que cumpla con el tipo, se le dará a elegir entre 3 nuevos iniciales del tipo elegido, de un listado definido en el script.
 
+![captura 1](assets/capture1.png)
+![captura 2](assets/capture2.png)
+![captura 3](assets/capture3.png)
+
+### Con el flag `BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS` activado
+
+#### Con piedra agua
+
+![imagen water_stone](assets/water_stone.png)
+
+#### Con piedra fuego
+
+![imagen fire_stone](assets/fire_stone.png)
+
 ## Configuración
 
 En el script hay una constante llamada `TYPES` en esta constante se definen los tipos que consideran que en sus juegos es viable hacer un reto monotipo.
