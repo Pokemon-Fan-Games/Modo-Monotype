@@ -35,6 +35,10 @@ module MonotypeChallenge
     $PokemonGlobal.monotype_type || nil
   end
 
+  def self.type_name
+    type ? PBTypes.getName(type) : nil
+  end
+
   # Guarda el tipo del monotype
   def self.type=(type_index)
     return if type_index >= self::TYPES.length
@@ -139,5 +143,24 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
     return -1 unless MonotypeChallenge.valid_monotype?(new_species)
 
     new_species
+  end
+end
+
+module PokeBattle_BattleCommon
+  alias pbThrowPokeBall_mono pbThrowPokeBall
+  def pbThrowPokeBall(idxPokemon,ball,rareness=nil,showplayer=false,safari=false,firstfailedthrowatsafari=false)
+    if MonotypeChallenge.enabled?
+      battler = pbIsOpposing?(idxPokemon) ? battlers[idxPokemon] : battlers[idxPokemon].pbOppositeOpposing
+      battler = battler.pbPartner if battler.isFainted?
+
+      if MonotypeChallenge.valid_monotype?(battler)
+        pbThrowPokeBall_mono(idxPokemon,ball,rareness,showplayer,safari,firstfailedthrowatsafari)
+      else
+        @scene.pbThrowAndDeflect(ball, 1)
+        pbDisplay(_INTL("Solo puedes capturar a Pokémon de tipo #{MonotypeChallenge.type_name}."))
+      end
+    else
+      pbThrowPokeBall_mono(idxPokemon,ball,rareness,showplayer,safari,firstfailedthrowatsafari)
+    end
   end
 end

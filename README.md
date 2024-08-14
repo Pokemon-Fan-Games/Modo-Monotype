@@ -29,7 +29,8 @@ En el script hay una constante llamada `TYPES` en esta constante se definen los 
 ## Implementación
 
 1. Descargar el script del ultimo [release](https://github.com/Pokemon-Fan-Games/Modo-Monotype/releases/tag/16_BES_v1.0.0).
-2. Crear el siguiente evento para activar el reto.
+2. Crear el script por encima de Main
+3. Crear el siguiente evento para activar el reto.
    1. ![imagen evento](/assets/event1.png)
    2. Primero hay que hacer un show choices preguntando si se desea activar el modo.
    3. Pidan una confirmacion ya que al activarlo se borrará el primer pokemon del equipo.
