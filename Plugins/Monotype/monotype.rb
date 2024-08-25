@@ -6,6 +6,10 @@ module MonotypeChallenge
 
   BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS = true
 
+  DELETE_INVALID_FROM_PARTY = true
+  MOVE_INVALID_FROM_PARTY_TO_PC = false
+  DELETE_INVALID_FROM_PC = false
+
   # Listado de tipos posibles para el reto monotype
   TYPES = [:BUG, :NORMAL, :POISON, :FLYING, :WATER, :GRASS, :FIRE, :ICE]
 
@@ -50,13 +54,23 @@ module MonotypeChallenge
     return unless $PokemonGlobal.monotype_type
 
     pokes_to_remove = []
-    $player.party.each_with_index do |poke, index|
-      unless valid_monotype?(poke)
-        $player.remove_pokemon_at_index(index) 
-        pokes_to_remove.push(index)
+    if !MOVE_INVALID_FROM_PARTY_TO_PC && DELETE_INVALID_FROM_PARTY
+      $player.party.each_with_index do |poke, index|
+        unless valid_monotype?(poke)
+          $player.remove_pokemon_at_index(index) 
+          pokes_to_remove.push(index)
+        end
       end
+    elsif MOVE_INVALID_FROM_PARTY_TO_PC
+      $player.party.each do |poke|
+        unless valid_monotype?(poke)
+          $PokemonStorage.pbStoreCaught(poke)
+          pokes_to_remove.push(poke)
+        end
+      end
+    else
+      pokes_to_remove = $player.party.select { |poke| !valid_monotype?(poke) }
     end
-
     no_valid = $player.party.length <= pokes_to_remove.length
     no_valid
   end
@@ -77,7 +91,20 @@ module MonotypeChallenge
     pbAddPokemon(starters[chosen], 5)
     $player.remove_pokemon_at_index(0)
     type_name = GameData::Type.get(type).name
+    delete_invalid_from_pc
     Kernel.pbMessage(_INTL("¡A partir de ahora estás en un <b>Reto Monotype</b> de tipo #{type_name}!"))
+  end
+
+  def delete_invalid_from_pc
+    return unless $PokemonGlobal.monotype_type && DELETE_INVALID_FROM_PC
+    (-1...$PokemonStorage.maxBoxes).each do |i|
+      $PokemonStorage.maxPokemon(i).times do |j|
+        pkmn = $PokemonStorage[i][j]
+        if !pkmn.egg? && !valid_monotype?(poke)
+          $PokemonStorage.pbDelete(i, j)
+        end
+      end
+    end
   end
 
   # Valida que el pokemon sea valido para el reto monotype elegido
