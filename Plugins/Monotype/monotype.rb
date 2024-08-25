@@ -4,10 +4,10 @@ end
 
 module MonotypeChallenge
 
-  BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS = false
+  BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS = true
 
   # Listado de tipos posibles para el reto monotype
-  TYPES = [:BUG, :NORMAL, :POISON, :FLYING, :WATER, :GRASS, :FIRE]
+  TYPES = [:BUG, :NORMAL, :POISON, :FLYING, :WATER, :GRASS, :FIRE, :ICE]
 
   # Listado de iniciales para cada reto monotype
   # Pueden ser mas de 3 y se tomarán 3 de este listado aleatoriamente.
@@ -18,7 +18,8 @@ module MonotypeChallenge
     :FLYING => [:STARLY, :PIKIPEK, :ROOKIDEE],
     :WATER  => [:POLIWAG, :HORSEA, :TYMPOLE],
     :GRASS  => [:SEEDOT, :BUDEW, :SMOLIV],
-    :FIRE   => [:MAGBY, :LITWICK, :ROLYCOLY]
+    :FIRE   => [:MAGBY, :LITWICK, :ROLYCOLY],
+    :ICE    => [:SNOVER, :SWINUB, :SNORUNT]
   }
 
   def self.enabled?
@@ -41,7 +42,7 @@ module MonotypeChallenge
   # Devuelve los tipos posibles para el monotype
   def self.type_options
     options = self::TYPES.map { |type| GameData::Type.get(type).name }
-    options.push('NO')
+    options.push(_INTL('NO'))
     options
   end
 
@@ -50,14 +51,13 @@ module MonotypeChallenge
 
     pokes_to_remove = []
     $player.party.each_with_index do |poke, index|
-      pokes_to_remove.push(index) unless valid_monotype?(poke)
+      unless valid_monotype?(poke)
+        $player.remove_pokemon_at_index(index) 
+        pokes_to_remove.push(index)
+      end
     end
 
     no_valid = $player.party.length <= pokes_to_remove.length
-
-    pokes_to_remove.each do |poke|
-      $player.remove_pokemon_at_index(poke)
-    end
     no_valid
   end
 
@@ -72,12 +72,12 @@ module MonotypeChallenge
     commands = starters.map { |starter| GameData::Species.get(starter).name }
 
     chosen = -1
-    chosen = Kernel.pbMessage('Elige a tu nuevo inicial', commands, -1) while chosen == -1
+    chosen = Kernel.pbMessage(_INTL('Elige a tu nuevo inicial'), commands, -1) while chosen == -1
 
     pbAddPokemon(starters[chosen], 5)
     $player.remove_pokemon_at_index(0)
     type_name = GameData::Type.get(type).name
-    Kernel.pbMessage("¡A partir de ahora estás en un <b>Reto Monotype</b> de tipo #{type_name}!")
+    Kernel.pbMessage(_INTL("¡A partir de ahora estás en un <b>Reto Monotype</b> de tipo #{type_name}!"))
   end
 
   # Valida que el pokemon sea valido para el reto monotype elegido
