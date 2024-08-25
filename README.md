@@ -26,6 +26,12 @@ En el script hay una constante llamada `TYPES` en esta constante se definen los 
 
 `BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS` el valor por defecto de esta constante es false. Si lo cambian a true no permitirá a los pokémon evolucionar a pokemón que no sean del tipo del reto monotype. Por ejemplo en un monotipo agua Eevee siempre será capturable, y podrá evolucionar a Vaporeon pero no a Jolteon.
 
+`DELETE_INVALID_FROM_PARTY` el valor por defecto de esta constante es true. Si cambia a false los Pokemón que no cumplan con el tipo de reto monotype no serán eliminados del equipo.
+
+`MOVE_INVALID_FROM_PARTY_TO_PC` el valor por defecto de esta constante es false. Si cambia a true los Pokemón que no cumplan con el tipo de reto monotype serán movidos al PC.
+
+`DELETE_INVALID_FROM_PC` el valor por defecto de esta constante es false. Si cambia a true los Pokemón del PC que no cumplan con el tipo de reto monotype serán eliminados.
+
 ## Implementación
 
 1. Descargar el script del ultimo [release](https://github.com/Pokemon-Fan-Games/Modo-Monotype/releases/latest).
