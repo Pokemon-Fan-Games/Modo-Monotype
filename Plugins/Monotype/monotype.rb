@@ -17,7 +17,7 @@ module MonotypeChallenge
   DELETE_INVALID_FROM_PC = false
 
   # Listado de tipos posibles para el reto monotype
-  TYPES = [:BUG, :NORMAL, :POISON, :FLYING, :WATER, :GRASS, :FIRE, :ICE]
+  TYPES = [:BUG, :NORMAL, :POISON, :FLYING, :WATER, :GRASS, :FIRE, :ICE, :DARK]
 
   # Listado de iniciales para cada reto monotype
   # Pueden ser mas de 3 y se tomarán 3 de este listado aleatoriamente.
@@ -84,9 +84,9 @@ module MonotypeChallenge
   def self.choose_starter
     return unless $PokemonGlobal.monotype_type
 
-    starters = self::STARTER_OPTIONS[$PokemonGlobal.monotype_type].sample(3)
+    starters = self::STARTER_OPTIONS[$PokemonGlobal.monotype_type]&.sample(3)
 
-    return if starters.empty?
+    return if !starters && starters.empty?
 
     commands = starters.map { |starter| GameData::Species.get(starter).name }
 
@@ -145,16 +145,15 @@ module MonotypeChallenge
 
     species = poke.is_a?(Pokemon) ? poke.species : poke
     form = poke.form || 0
-    evos = GameData::Species.get_species_form(species, form).get_evolutions
+    evos = GameData::Species.get_species_form(species, form).get_family_evolutions
     evos_types = []
-
+    
     evos.each do |evo|
-      evo_species = evo[0] # Consigue la especie de la evo
-
+      evo_species = evo[1] # Consigue la especie de la evos
       evo_data = GameData::Species.get_species_form(evo_species, form)
       evos_types += evo_data.types
     end
-
+    
     evos_types.uniq.compact # Remove duplicates and nil values
   end
 end
@@ -175,7 +174,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
     alias check_evolution_on_use_item_mono check_evolution_on_use_item
     def check_evolution_on_use_item(item_used)
-      return check_evolution_on_use_item_mono unless MonotypeChallenge.enabled?
+      return check_evolution_on_use_item_mono(item_used) unless MonotypeChallenge.enabled?
 
       new_species = check_evolution_on_use_item_mono(item_used)
 
@@ -185,7 +184,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
     alias check_evolution_on_trade_mono check_evolution_on_trade
     def check_evolution_on_trade(other_pkmn)
-      return check_evolution_on_trade_mono unless MonotypeChallenge.enabled?
+      return check_evolution_on_trade_mono(other_pkmn) unless MonotypeChallenge.enabled?
 
       new_species = check_evolution_on_trade_mono(other_pkmn)
 
@@ -195,7 +194,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
     alias check_evolution_after_battle_mono check_evolution_after_battle
     def check_evolution_after_battle(party_index)
-      return check_evolution_after_battle_mono unless MonotypeChallenge.enabled?
+      return check_evolution_after_battle_mono(party_index) unless MonotypeChallenge.enabled?
 
       new_species = check_evolution_after_battle_mono(party_index)
 
@@ -205,7 +204,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
     alias check_evolution_by_event_mono check_evolution_by_event
     def check_evolution_by_event(value = 0)
-      return check_evolution_by_event_mono unless MonotypeChallenge.enabled?
+      return check_evolution_by_event_mono(value) unless MonotypeChallenge.enabled?
 
       new_species = check_evolution_by_event_mono(value)
 
