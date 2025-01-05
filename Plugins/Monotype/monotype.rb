@@ -114,9 +114,9 @@ module MonotypeChallenge
 
   # Valida que el pokemon sea valido para el reto monotype elegido
   # Devuelve mensaje de error si no lo es
-  def self.valid_monotype_with_text?(poke)
+  def self.valid_monotype_with_text?(poke, form = 0)
     if poke.is_a?(Symbol)
-      species_data = GameData::Species.get(poke)
+      species_data = GameData::Species.get_species_form(poke, form)
       return true if species_data.types.include?($PokemonGlobal.monotype_type)
 
       return false, GameData::Type.get($PokemonGlobal.monotype_type).name
@@ -133,8 +133,8 @@ module MonotypeChallenge
 
   # Valida que el pokemon sea valido para el monotype elegido
   # Devuelve true si lo es, y false si no
-  def self.valid_monotype?(poke)
-    is_valid, _text = valid_monotype_with_text?(poke)
+  def self.valid_monotype?(poke, form = 0)
+    is_valid, _text = valid_monotype_with_text?(poke, form)
     is_valid
   end
 
@@ -167,7 +167,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
       new_species = check_evolution_on_level_up_mono
 
-      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species)
+      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species, form)
 
       new_species
     end
@@ -178,7 +178,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
       new_species = check_evolution_on_use_item_mono(item_used)
 
-      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species)
+      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species, form)
       new_species
     end
 
@@ -188,7 +188,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
       new_species = check_evolution_on_trade_mono(other_pkmn)
 
-      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species)
+      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species, form)
       new_species
     end
 
@@ -198,7 +198,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
       new_species = check_evolution_after_battle_mono(party_index)
 
-      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species)
+      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species, form)
       new_species
     end
 
@@ -208,7 +208,7 @@ if MonotypeChallenge::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
 
       new_species = check_evolution_by_event_mono(value)
 
-      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species)
+      new_species = nil if new_species && !MonotypeChallenge.valid_monotype?(new_species, form)
       new_species
     end
   end
