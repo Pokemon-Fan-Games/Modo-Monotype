@@ -13,7 +13,7 @@ module MonotypeMenu
     # Variable que almacena un array con los starters del tipo elegido
     STARTER_VARIABLE_ID = 31
 
-    INTRO_TEXT = _INTL("¿Quieres activar el <b>RETO MONOTYPE</b>? Si es tu <b>primera partida</b> en Pokémon Añil te recomendamos <b>no elegirlo</b>.")
+    INTRO_TEXT = _INTL("¿Quieres activar el <b>RETO MONOTYPE</b>? Si es tu <b>primera partida</b> te recomendamos <b>no elegirlo</b>.")
 
     INTRO_TEXT_ACTIVE = _INTL("El <b>RETO MONOTYPE</b> de tipo <b>{1}</b> está activado.\n¿Qué quieres hacer?")
 
