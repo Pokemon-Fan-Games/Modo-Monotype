@@ -98,7 +98,7 @@ module MonotypeMenu
       result = screen.pbStartScreen
       
       case result
-      when :terminar
+      when :finish
         break
       when :show_not_recommended
         current_type = :not_recommended
@@ -268,7 +268,7 @@ module MonotypeMenu
       mensaje = build_confirmation_message(nombre)    
       if pbConfirmMessage(mensaje)
         apply_selection(simbolo, starters)
-        return :terminar
+        return :finish
       end
       nil
     end
