@@ -23,23 +23,6 @@ module MonotypeChallenge
     DELETE_INVALID_FROM_PC = false
   end
 
-  # Listado de tipos posibles para el reto monotype
-  # TYPES = [:BUG, :NORMAL, :POISON, :FLYING, :WATER, :GRASS, :FIRE, :ICE, :DARK].freeze
-
-  # Listado de iniciales para cada reto monotype
-  # Pueden ser más de 3 y se tomarán 3 de este listado aleatoriamente.
-  # STARTER_OPTIONS = {
-  #   :BUG    => [:SEWADDLE, :GRUBBIN, :BLIPBUG],
-  #   :NORMAL => [:WHISMUR, :LILLIPUP, :ZIGZAGOON],
-  #   :POISON => [:ODDISH, :ZUBAT, :VENIPEDE],
-  #   :FLYING => [:STARLY, :PIKIPEK, :ROOKIDEE],
-  #   :WATER  => [:POLIWAG, :HORSEA, :TYMPOLE],
-  #   :GRASS  => [:SEEDOT, :BUDEW, :SMOLIV],
-  #   :FIRE   => [:MAGBY, :LITWICK, :ROLYCOLY],
-  #   :ICE    => [:SNOVER, :SWINUB, :SNORUNT],
-  #   :DARK   => [:POOCHYENA, :SABLEYE, :CARVANHA]
-  # }.freeze
-
   def self.enabled?
     !type.nil?
   end
@@ -63,13 +46,6 @@ module MonotypeChallenge
     return unless new_type.nil? || GameData::Type.exists?(new_type)
     $PokemonGlobal.monotype_type = new_type
   end
-
-  # Devuelve los tipos posibles para el monotype
-  # def self.type_options
-  #   options = TYPES.map { |type| GameData::Type.get(type).name }
-  #   options.push(_INTL('NO'))
-  #   options
-  # end
 
   def self.no_valid_pokemon_in_party?
     return false unless enabled?
@@ -183,7 +159,7 @@ module MonotypeChallenge
         evos_types.concat(evo_data.types)
       end
       
-      evos_types.uniq.compact # Eliminar duplicados y valores nil
+      return evos_types.uniq.compact # Eliminar duplicados y valores nil
     rescue
       [] # Retornar array vacío si hay error en la consulta
     end
@@ -196,8 +172,13 @@ if MonotypeChallenge::Config::BLOQUEAR_EVOLUCIONES_A_OTROS_TIPOS
     # Método auxiliar para validar evoluciones en el contexto monotype
     def validate_monotype_evolution(new_species)
       return new_species unless MonotypeChallenge.enabled?
-      return nil if new_species && !MonotypeChallenge.valid_monotype?(new_species, form)
-      new_species
+      return nil unless new_species
+      
+      # Permitir la evolución si la especie actual o cualquier evolución futura tiene el tipo correcto
+      return new_species if MonotypeChallenge.valid_monotype?(new_species, self.form)
+      return new_species if MonotypeChallenge.evolved_types(new_species).include?(MonotypeChallenge.type)
+      
+      nil
     end
 
     alias check_evolution_on_level_up_mono check_evolution_on_level_up
@@ -236,7 +217,8 @@ if MonotypeChallenge::Config::BLOCK_GIFT_POKEMON
     alias pbAddPokemon_Mono pbAddPokemon
     def pbAddPokemon(pkmn, level = 1, see_form = true)
       if MonotypeChallenge.enabled? && !MonotypeChallenge.valid_monotype?(pkmn)
-        pbMessage(_INTL("¡Solo puedes recibir Pokémon de tipo {1}!", MonotypeChallenge.type_name))
+        species_name = GameData::Species.get(pkmn).name
+        pbMessage(_INTL("¡No puedes recibir a un {1}!\n¡Solo puedes recibir Pokémon de tipo {2}!", species_name, MonotypeChallenge.type_name))
         return false
       end
       pbAddPokemon_Mono(pkmn, level, see_form)

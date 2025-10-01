@@ -286,7 +286,7 @@ module MonotypeMenu
       pbPlayDecisionSE
       $game_variables[Config::CHOSEN_MONOTYPE] = simbolo
       MonotypeChallenge.type = simbolo
-      if defined?(RandomizedChallenge) && RandomizedChallenge.enabled?
+      if defined?(RandomizedChallenge) && RandomizedChallenge.randomize_pokemon?
         generate_random_starters
       end
       pbSet(Config::STARTER_VARIABLE_ID, starters)
