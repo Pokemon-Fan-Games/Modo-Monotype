@@ -216,8 +216,12 @@ end
 if MonotypeChallenge::Config::BLOCK_GIFT_POKEMON
     alias pbAddPokemon_Mono pbAddPokemon
     def pbAddPokemon(pkmn, level = 1, see_form = true)
-      if MonotypeChallenge.enabled? && !MonotypeChallenge.valid_monotype?(pkmn)
-        species_name = GameData::Species.get(pkmn).name
+      return pbAddPokemon_Mono(pkmn, level, see_form) unless MonotypeChallenge.enabled?
+      if !pkmn.is_a?(Pokemon)
+        pkmn = Pokemon.new(pkmn, level)
+      end
+      if !MonotypeChallenge.valid_monotype?(pkmn)
+        species_name = pkmn.species_data.name
         pbMessage(_INTL("¡No puedes recibir a un {1}!\n¡Solo puedes recibir Pokémon de tipo {2}!", species_name, MonotypeChallenge.type_name))
         return false
       end
